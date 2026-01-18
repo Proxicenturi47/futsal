@@ -1,5 +1,6 @@
 "use client"
 
+import { useRouter } from "next/navigation"
 import { MapPin, Star, Clock, Users } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -25,6 +26,7 @@ interface VenueCardProps {
 }
 
 export function VenueCard({
+  id,
   name,
   address,
   distance,
@@ -36,14 +38,22 @@ export function VenueCard({
   availableSlots,
   selectedTime,
 }: VenueCardProps) {
+  const router = useRouter()
   const filteredSlots = selectedTime
     ? availableSlots.filter((slot) => slot.time === selectedTime)
     : availableSlots
 
   const hasAvailability = filteredSlots.some((slot) => slot.available)
 
+  const handleCardClick = () => {
+    router.push(`/venue/${id}`)
+  }
+
   return (
-    <Card className="overflow-hidden transition-all hover:shadow-lg border-border/50">
+    <Card 
+      className="overflow-hidden transition-all hover:shadow-lg border-border/50 cursor-pointer"
+      onClick={handleCardClick}
+    >
       <div className="flex flex-col sm:flex-row">
         <div className="relative w-full sm:w-48 h-48 sm:h-auto flex-shrink-0">
           <img
@@ -131,8 +141,12 @@ export function VenueCard({
               <Button
                 disabled={!hasAvailability}
                 className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  router.push(`/venue/${id}`)
+                }}
               >
-                {hasAvailability ? "Book Now" : "Not Available"}
+                {hasAvailability ? "Book Now" : "View Details"}
               </Button>
             </div>
           </div>
